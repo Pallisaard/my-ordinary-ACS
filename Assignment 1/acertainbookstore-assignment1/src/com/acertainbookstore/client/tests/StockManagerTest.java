@@ -40,7 +40,7 @@ public class StockManagerTest {
 	private static final Integer NUM_COPIES = 5;
 
 	/** The local test. */
-	private static boolean localTest = false;
+	private static boolean localTest = true;
 
 	/** The store manager. */
 	private static StockManager storeManager;
