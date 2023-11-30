@@ -17,6 +17,7 @@ import com.acertainbookstore.business.BookCopy;
 import com.acertainbookstore.business.CertainBookStore;
 import com.acertainbookstore.business.ImmutableStockBook;
 import com.acertainbookstore.business.StockBook;
+import com.acertainbookstore.business.BookRating;
 import com.acertainbookstore.client.BookStoreHTTPProxy;
 import com.acertainbookstore.client.StockManagerHTTPProxy;
 import com.acertainbookstore.interfaces.BookStore;
@@ -289,6 +290,115 @@ public class BookStoreTest {
 
 		// Make sure the lists equal each other.
 		assertTrue(listBooks.containsAll(booksAdded) && listBooks.size() == booksAdded.size());
+	}
+
+	/**
+	 * Tests that book can be rated.
+	 *
+	 * @throws BookStoreException
+	 *             the book store exception
+	 */
+	@Test
+	public void testRateBookOnce() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings = new HashSet<>();
+		bookRatings.add(new BookRating(TEST_ISBN + 1, 5));
+
+		// Rate the book.
+		client.rateBooks(bookRatings);
+
+		assert(storeManager.getBooks().get(1).getAverageRating() == 5
+			   && storeManager.getBooks().get(1).getNumTimesRated() == 1);
+	}
+
+	/**
+	 * Tests that book can be rated multiple times.
+	 */
+	@Test
+	public void testRateBookMultipleTimes() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings1 = new HashSet<>();
+		bookRatings1.add(new BookRating(TEST_ISBN + 1, 5));
+		Set<BookRating> bookRatings2 = new HashSet<>();
+		bookRatings2.add(new BookRating(TEST_ISBN + 1, 4));
+		Set<BookRating> bookRatings3 = new HashSet<>();
+		bookRatings3.add(new BookRating(TEST_ISBN + 1, 3));
+
+		// Rate the book.
+		client.rateBooks(bookRatings1);
+		client.rateBooks(bookRatings2);
+		client.rateBooks(bookRatings3);
+
+		assert(storeManager.getBooks().get(1).getAverageRating() == 4
+				&& storeManager.getBooks().get(1).getNumTimesRated() == 3);
+	}
+
+	/**
+	 * Tests that a book cannot be rated anything other than 1-5.
+	 */
+	@Test
+	public void testRateBookInvalidRating() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings = new HashSet<>();
+		bookRatings.add(new BookRating(TEST_ISBN + 1, 6));
+		bookRatings.add(new BookRating(TEST_ISBN + 1, 0));
+		bookRatings.add(new BookRating(TEST_ISBN + 1, -1));
+
+		// Rate the book.
+		try {
+			client.rateBooks(bookRatings);
+			fail();
+		} catch (BookStoreException ex) {
+			;
+		}
+
+		assert(storeManager.getBooks().get(0).getAverageRating() == -1
+				&& storeManager.getBooks().get(0).getNumTimesRated() == 0);
+	}
+
+	/**
+	 * Tests that a book cannot be rated if it does not exist.
+	 */
+	@Test
+	public void testRateBookInvalidISBN() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings = new HashSet<>();
+		bookRatings.add(new BookRating(TEST_ISBN + 2, 5));
+
+		// Rate the book.
+		try {
+			client.rateBooks(bookRatings);
+			fail();
+		} catch (BookStoreException ex) {
+			;
+		}
+
+		assert(storeManager.getBooks().get(0).getAverageRating() == -1
+				&& storeManager.getBooks().get(0).getNumTimesRated() == 0);
 	}
 
 	/**

@@ -37,5 +37,11 @@ public enum BookStoreMessageTag {
 	GETSTOCKBOOKSBYISBN,
 
 	/** The tag for the get books in demand message. */
-	GETBOOKSINDEMAND;
+	GETBOOKSINDEMAND,
+
+	/** The tag for the rate books message. */
+	RATEBOOKS,
+
+	/** The tag for the get top-rated books message. */
+	TOPRATEDBOOKS;
 }

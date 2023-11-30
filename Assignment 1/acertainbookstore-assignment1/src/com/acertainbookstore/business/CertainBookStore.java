@@ -313,22 +313,24 @@ public class CertainBookStore implements BookStore, StockManager {
 	 */
 	@Override
 	public synchronized List<Book> getTopRatedBooks(int numBooks) throws BookStoreException {
-		throw new BookStoreException();
+		//throw new BookStoreException();
+		if (numBooks < 0) {
+			throw new BookStoreException("numBooks = " + numBooks + " must be positive");
+		}
+
+		List<BookStoreBook> listRatedBooks = bookMap.entrySet().stream().map(pair -> pair.getValue())
+				.filter(book -> book.getTotalRating() > 0).collect(Collectors.toList());
+
+		if (listRatedBooks.size() < numBooks) {
+			throw new BookStoreException("numBooks = " + numBooks + " must be less than the number of rated books");
+		}
+
+		// get top num books rated
+		List<BookStoreBook> topRatedBooks = listRatedBooks.stream()
+				.sorted((book1, book2) -> Float.compare(book2.getAverageRating(), book1.getAverageRating()))
+				.limit(numBooks).collect(Collectors.toList());
+		return topRatedBooks.stream().map(book -> book.immutableBook()).collect(Collectors.toList());
 	}
-
-
-	/*public synchronized List<Book> getBooks(Set<Integer> isbnSet) throws BookStoreException {
-		if (isbnSet == null) {
-			throw new BookStoreException(BookStoreConstants.NULL_INPUT);
-		}
-
-		// Check that all ISBNs that we rate are there to start with.
-		for (Integer ISBN : isbnSet) {
-			validateISBNInStock(ISBN);
-		}
-
-		return isbnSet.stream().map(isbn -> bookMap.get(isbn).immutableBook()).collect(Collectors.toList());
-	}*/
 
 	/*
 	 * (non-Javadoc)
@@ -353,7 +355,20 @@ public class CertainBookStore implements BookStore, StockManager {
 	 */
 	@Override
 	public synchronized void rateBooks(Set<BookRating> bookRating) throws BookStoreException {
-		throw new BookStoreException();
+		int isbn;
+		int rating;
+		BookStoreBook book;
+
+		for (BookRating bookRatingToRate : bookRating) {
+			isbn = bookRatingToRate.getISBN();
+			validateISBNInStock(isbn);
+			rating = bookRatingToRate.getRating();
+			if (rating > 5 || rating < 0) {
+				throw new BookStoreException("Rating must be from 0 to 5");
+			}
+			book = bookMap.get(isbn);
+			book.addRating(rating);
+		}
 	}
 
 	/*
