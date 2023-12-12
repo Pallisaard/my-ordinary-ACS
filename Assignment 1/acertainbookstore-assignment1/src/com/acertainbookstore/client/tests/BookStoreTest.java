@@ -460,6 +460,153 @@ public class BookStoreTest {
 	}
 
 	/**
+	 * Tests that we get error trying to retrieve top-rated books when no books are rated.
+	 */
+	@Test
+	public void testGetTopRatedBooksNoRatings() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<StockBook>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 2, "The C Programming Language",
+				"Dennis Ritchie and Brian Kerninghan", (float) 50, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Get top rated books.
+		try {
+			List<Book> books = client.getTopRatedBooks(2);
+			fail();
+		} catch (BookStoreException ex) {
+			;
+		}
+		// Make sure the lists equal each other
+	}
+
+	/**
+	 * Tests that we can retreive all two top-rated books when two books are rated.
+	 */
+	@Test
+	public void testGetTopRatedBooksTwoRatings() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<StockBook>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 2, "The C Programming Language",
+				"Dennis Ritchie and Brian Kerninghan", (float) 50, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings1 = new HashSet<>();
+		bookRatings1.add(new BookRating(TEST_ISBN + 1, 5));
+		Set<BookRating> bookRatings2 = new HashSet<>();
+		bookRatings2.add(new BookRating(TEST_ISBN + 2, 4));
+
+		// Rate the books.
+		client.rateBooks(bookRatings1);
+		client.rateBooks(bookRatings2);
+
+		// Get top rated books.
+		List<Book> books = client.getTopRatedBooks(2);
+
+		// Make sure the lists equal each other
+		assertEquals(2, books.size());
+	}
+
+	/**
+	 * Tests that we can retrieve one top-rated book when two books are rated.
+	 */
+	@Test
+	public void testGetTopRatedBooksOneRating() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<StockBook>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 2, "The C Programming Language",
+				"Dennis Ritchie and Brian Kerninghan", (float) 50, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings1 = new HashSet<>();
+		bookRatings1.add(new BookRating(TEST_ISBN + 1, 5));
+		Set<BookRating> bookRatings2 = new HashSet<>();
+		bookRatings2.add(new BookRating(TEST_ISBN + 2, 4));
+
+		// Rate the books.
+		client.rateBooks(bookRatings1);
+		client.rateBooks(bookRatings2);
+
+		// Get top rated books.
+		List<Book> books = client.getTopRatedBooks(1);
+
+		// Make sure the lists equal each other
+		assertEquals(1, books.size());
+	}
+
+	/**
+	 * Tests that we get error trying to retrieve top-rated books when number of books is negative.
+	 */
+	@Test
+	public void testGetTopRatedBooksNegativeNumber() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<StockBook>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 2, "The C Programming Language",
+				"Dennis Ritchie and Brian Kerninghan", (float) 50, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings1 = new HashSet<>();
+		bookRatings1.add(new BookRating(TEST_ISBN + 1, 5));
+		Set<BookRating> bookRatings2 = new HashSet<>();
+		bookRatings2.add(new BookRating(TEST_ISBN + 2, 4));
+
+		// Rate the books.
+		client.rateBooks(bookRatings1);
+		client.rateBooks(bookRatings2);
+
+		// Get top rated books.
+		try {
+			List<Book> books = client.getTopRatedBooks(-1);
+			fail();
+		} catch (BookStoreException ex) {
+			;
+		}
+	}
+
+	/**
+	 * Tests that we get error trying to retrieve more top-rated books than have been rated.
+	 */
+	@Test
+	public void testGetTopRatedBooksTooManyBooks() throws BookStoreException {
+		Set<StockBook> booksToAdd = new HashSet<StockBook>();
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1, "The Art of Computer Programming", "Donald Knuth",
+				(float) 300, NUM_COPIES, 0, 0, 0, false));
+		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 2, "The C Programming Language",
+				"Dennis Ritchie and Brian Kerninghan", (float) 50, NUM_COPIES, 0, 0, 0, false));
+
+		storeManager.addBooks(booksToAdd);
+
+		// Create book rating
+		Set<BookRating> bookRatings1 = new HashSet<>();
+		bookRatings1.add(new BookRating(TEST_ISBN + 1, 5));
+		Set<BookRating> bookRatings2 = new HashSet<>();
+		bookRatings2.add(new BookRating(TEST_ISBN + 2, 4));
+
+		// Rate the books.
+		client.rateBooks(bookRatings1);
+		client.rateBooks(bookRatings2);
+
+		// Get top rated books.
+		try {
+			List<Book> books = client.getTopRatedBooks(3);
+			fail();
+		} catch (BookStoreException ex) {
+			;
+		}
+	}
+
+	/**
 	 * Tear down after class.
 	 *
 	 * @throws BookStoreException
