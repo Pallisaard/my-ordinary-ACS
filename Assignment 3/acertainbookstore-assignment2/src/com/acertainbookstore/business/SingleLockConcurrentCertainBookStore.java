@@ -243,23 +243,23 @@ public class SingleLockConcurrentCertainBookStore implements BookStore, StockMan
 
 		Map<Integer, Integer> salesMisses = new HashMap<>();
 
-		for (BookCopy bookCopyToBuy : bookCopiesToBuy) {
-			isbn = bookCopyToBuy.getISBN();
-
-			validate(bookCopyToBuy);
-
-			book = bookMap.get(isbn);
-
-			if (!book.areCopiesInStore(bookCopyToBuy.getNumCopies())) {
-				// If we cannot sell the copies of the book, it is a miss.
-				salesMisses.put(isbn, bookCopyToBuy.getNumCopies() - book.getNumCopies());
-				saleMiss = true;
-			}
-		}
-
-		// write lock as needed.
+		// Read lock will be upgraded to write lock later, so we start with a write lock instead.
 		readWriteLock.writeLock().lock();
 		try {
+			for (BookCopy bookCopyToBuy : bookCopiesToBuy) {
+				isbn = bookCopyToBuy.getISBN();
+
+				validate(bookCopyToBuy);
+
+				book = bookMap.get(isbn);
+
+				if (!book.areCopiesInStore(bookCopyToBuy.getNumCopies())) {
+					// If we cannot sell the copies of the book, it is a miss.
+					salesMisses.put(isbn, bookCopyToBuy.getNumCopies() - book.getNumCopies());
+					saleMiss = true;
+				}
+			}
+
 			// We throw exception now since we want to see how many books in the
 			// order incurred misses which is used by books in demand
 			if (saleMiss) {
@@ -432,7 +432,8 @@ public class SingleLockConcurrentCertainBookStore implements BookStore, StockMan
 			throw new BookStoreException(BookStoreConstants.NULL_INPUT);
 		}
 
-		readWriteLock.readLock().lock();
+		// Instead of setting a read lock and superseding it with a write lock, we just use a write lock.
+		readWriteLock.writeLock().lock();
 		try {
 			for (Integer ISBN : isbnSet) {
 				if (BookStoreUtility.isInvalidISBN(ISBN)) {
@@ -443,14 +444,7 @@ public class SingleLockConcurrentCertainBookStore implements BookStore, StockMan
 					throw new BookStoreException(BookStoreConstants.ISBN + ISBN + BookStoreConstants.NOT_AVAILABLE);
 				}
 			}
-		} finally {
-			readWriteLock.readLock().unlock();
-		}
 
-		// We upgrade the read lock to a write lock this way.
-		// write lock as needed.
-		readWriteLock.writeLock().lock();
-		try {
 			for (int isbn : isbnSet) {
 				bookMap.remove(isbn);
 			}
