@@ -1,0 +1,17 @@
+Q1(a): describe those challenges you mention, eg overheads
+Q1(b): dallying is more of a group commit
+Q1(C): ok
+
+Q2(a): What data structure will store the mappings? If there's a machine that handles the requests isn't there a centalized component? So you mean that the central machine is the only one who writes/reads data? -please reply to the questions with certainty
+Q2(b): This question asks for the pseudocode of Read/Write
+Q2(c): What if multiple machines want to read/write data? Can we have partial results? How this affects the atomicity of the operations?
+Q2(d): Which faults can be tolerated?
+
+Q3(a): OK, but you missed the part ""In Schedule 1, can you change a single read action into a write action [...]"" of the question. Also, please remember that the dependence graph does not account for objects (x, y, etc.), i.e., in your schedule 3 dependence graph you should have included only one edge between T1 -> T3 and T3 -> T2.
+Q3(b): OK, but your answer regarding schedule 1 is incorrect because as you pointed out, it is not conflict serializable.
+
+Q4(a): Good.
+Q4(b): Incorrect.
+Q4(c): Good.
+
+Grade: 45.8/100
