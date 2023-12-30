@@ -1,0 +1,27 @@
+SingleLevelLock: Your implementation isn't 2PL because you lock-unlock in validate() and then also in next opeations - don't write locks in validate(). Also, validate() needs to read database, so you need to lock before it.
+
+TwoLevelLock: Regarding validate() same as previously - why you are aquiring top and bottom lock at the same time? What about removeAllBooks()?
+
+Test 1: Ok
+
+Test 2: Create C2 in a different thread.
+
+Test 3: Ok
+
+Test 4: Ok
+
+Q1(a): Explain how your locking achieves before-or-after atomicity by proving that it achieves conflict serializability.
+
+Q1(b): Ok, but explain Test 1 and 2 and for each test analyze what anomalies are you testing and how.
+
+Q1(c): Using different test strategies for two locking protocols will violate modularity, because it implies that the semantics of both classes differ.
+
+Q2: Your SingleLevelLocking is CS2PL. How the atomicity of predicate reads is guaranteed in both methods?
+
+Q3: Check previous question for which variant of 2PL your protocol is equivalent to, and re consider the possibility of deadlocks. In case of deadlock, give an example.
+
+Q4: What when the num of clients/requests grows so that the server can't handle? What about trashing/timeouts and why is one more prone to bottleneck?
+
+Q5: Please theoretically analyze the overhead and concurrency of different methods. Overhead means the cost for locking. Constrast the two methods - what are the trade-offs and how they differ in both cases?
+
+Grade: 38.9/100
