@@ -191,7 +191,7 @@ public class BookStoreConcurrencyTest {
      * when we started.
      */
     @Test
-    public void testConcurrencyTest1() {
+    public void testConcurrencyTest1() throws BookStoreException, InterruptedException {
         Thread clientThread = new Thread(() -> {
             try {
                 Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
@@ -221,13 +221,8 @@ public class BookStoreConcurrencyTest {
         clientThread.start();
         storeManagerThread.start();
 
-        try {
-            clientThread.join();
-            storeManagerThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            fail();
-        }
+        clientThread.join();
+        storeManagerThread.join();
 
         try {
             List<StockBook> books = storeManager.getBooks();
@@ -248,7 +243,8 @@ public class BookStoreConcurrencyTest {
      * after numGetBooks calls to getBooks have been made. The test fails if an inconsistent snapshot is returned.
      */
     @Test
-    public void testConcurrencyTest2() throws BookStoreException, InterruptedException {
+    public void testConcurrencyTest2() throws InterruptedException {
+        // First thread buys books and adds copies
         Thread c1Thread = new Thread(() -> {
             try {
                 Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
@@ -272,27 +268,38 @@ public class BookStoreConcurrencyTest {
             }
         });
 
+        // Second thread repeatedly calls getBooks
+        Thread c2Thread = new Thread(() -> {
+            try {
+                for (int i = 0; i < numGetBooks; i++) {
+                    List<StockBook> snapshot = storeManager.getBooks();
 
-        c1Thread.start();
-
-        for (int i = 0; i < numGetBooks; i++) {
-            List<StockBook> snapshot = storeManager.getBooks();
-
-            for (StockBook book : snapshot) {
-                if (book.getISBN() == 1) {
-                    assertTrue(NUM_COPIES == book.getNumCopies()
-                            || NUM_COPIES - numBooks[0] == book.getNumCopies());
-                } else if (book.getISBN() == 2) {
-                    assertTrue(NUM_COPIES == book.getNumCopies()
-                            || NUM_COPIES - numBooks[1] == book.getNumCopies());
-                } else if (book.getISBN() == 3) {
-                    assertTrue(NUM_COPIES == book.getNumCopies()
-                            || NUM_COPIES - numBooks[2] == book.getNumCopies());
+                    for (StockBook book : snapshot) {
+                        if (book.getISBN() == 1) {
+                            assertTrue(NUM_COPIES == book.getNumCopies()
+                                    || NUM_COPIES - numBooks[0] == book.getNumCopies());
+                        } else if (book.getISBN() == 2) {
+                            assertTrue(NUM_COPIES == book.getNumCopies()
+                                    || NUM_COPIES - numBooks[1] == book.getNumCopies());
+                        } else if (book.getISBN() == 3) {
+                            assertTrue(NUM_COPIES == book.getNumCopies()
+                                    || NUM_COPIES - numBooks[2] == book.getNumCopies());
+                        }
+                    }
                 }
+            } catch (BookStoreException e) {
+                e.printStackTrace();
+                fail();
             }
-        }
+        });
 
+        // Start threads simultaneously
+        c1Thread.start();
+        c2Thread.start();
+
+        // Wait for threads to finish
         c1Thread.join();
+        c2Thread.join();
     }
 
     /**
@@ -302,7 +309,8 @@ public class BookStoreConcurrencyTest {
      * getBooks have been made. The test fails if an inconsistent snapshot is returned.
      */
     @Test
-    public void testConcurrencyTest3() throws BookStoreException, InterruptedException {
+    public void testConcurrencyTest3() throws InterruptedException {
+        // First thread adds and removes books
         Thread c1Thread = new Thread(() -> {
             try {
                 Set<StockBook> booksToAdd = new HashSet<StockBook>();
@@ -326,26 +334,39 @@ public class BookStoreConcurrencyTest {
             }
         });
 
-        c1Thread.start();
+        // Second thread repeatedly calls getBooks
+        Thread c2Thread = new Thread(() -> {
+            try {
 
-        for (int i = 0; i < numGetBooks; i++) {
-            List<StockBook> snapshot = storeManager.getBooks();
+                for (int i = 0; i < numGetBooks; i++) {
+                    List<StockBook> snapshot = storeManager.getBooks();
 
-            for (StockBook book : snapshot) {
-                if (book.getISBN() == 1) {
-                    assertTrue(NUM_COPIES == book.getNumCopies()
-                            ||  0 == book.getNumCopies());
-                } else if (book.getISBN() == 2) {
-                    assertTrue(NUM_COPIES == book.getNumCopies()
-                            || 0 == book.getNumCopies());
-                } else if (book.getISBN() == 3) {
-                    assertTrue(NUM_COPIES == book.getNumCopies()
-                            || 0 == book.getNumCopies());
+                    for (StockBook book : snapshot) {
+                        if (book.getISBN() == 1) {
+                            assertTrue(NUM_COPIES == book.getNumCopies()
+                                    ||  0 == book.getNumCopies());
+                        } else if (book.getISBN() == 2) {
+                            assertTrue(NUM_COPIES == book.getNumCopies()
+                                    || 0 == book.getNumCopies());
+                        } else if (book.getISBN() == 3) {
+                            assertTrue(NUM_COPIES == book.getNumCopies()
+                                    || 0 == book.getNumCopies());
+                        }
+                    }
                 }
+            } catch (BookStoreException e) {
+                e.printStackTrace();
+                fail();
             }
-        }
+        });
 
+        // Start threads simultaneously
+        c1Thread.start();
+        c2Thread.start();
+
+        // Wait for threads to finish
         c1Thread.join();
+        c2Thread.join();
     }
 
     /**
@@ -356,6 +377,7 @@ public class BookStoreConcurrencyTest {
      */
     @Test
     public void testConcurrencyTest4() throws BookStoreException, InterruptedException {
+        // First thread buys books
         Thread c1Thread = new Thread(() -> {
             try {
                 Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
@@ -370,6 +392,7 @@ public class BookStoreConcurrencyTest {
             }
         });
 
+        // Second thread buys books
         Thread c2Thread = new Thread(() -> {
             try {
                 Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
@@ -384,6 +407,7 @@ public class BookStoreConcurrencyTest {
             }
         });
 
+        // Third thread adds copies
         Thread storeManagerThread = new Thread(() -> {
             try {
                 Set<BookCopy> booksToAdd = new HashSet<BookCopy>();
@@ -399,24 +423,21 @@ public class BookStoreConcurrencyTest {
             }
         });
 
+        // Start threads simultaneously
         c1Thread.start();
         c2Thread.start();
         storeManagerThread.start();
 
+        // Wait for threads to finish
         c1Thread.join();
         c2Thread.join();
         storeManagerThread.join();
 
-        try {
-            List<StockBook> books = storeManager.getBooks();
-            for (StockBook book : books) {
-                if (book.getISBN() == TEST_ISBN) {
-                    assertEquals(NUM_COPIES, book.getNumCopies());
-                }
+        List<StockBook> books = storeManager.getBooks();
+        for (StockBook book : books) {
+            if (book.getISBN() == TEST_ISBN) {
+                assertEquals(NUM_COPIES, book.getNumCopies());
             }
-        } catch (BookStoreException e) {
-            e.printStackTrace();
-            fail();
         }
     }
 }
