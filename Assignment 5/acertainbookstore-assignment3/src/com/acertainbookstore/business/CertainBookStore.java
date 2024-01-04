@@ -38,6 +38,7 @@ public class CertainBookStore implements BookStore, StockManager {
 		// Constructors are not synchronized
 		bookMap = new HashMap<>();
 	}
+
 	private synchronized void validate(StockBook book) throws BookStoreException {
 		int isbn = book.getISBN();
 		String bookTitle = book.getTitle();
@@ -94,6 +95,7 @@ public class CertainBookStore implements BookStore, StockManager {
 			throw new BookStoreException(BookStoreConstants.ISBN + ISBN + BookStoreConstants.NOT_AVAILABLE);
 		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -202,7 +204,7 @@ public class CertainBookStore implements BookStore, StockManager {
 
 		for (BookCopy bookCopyToBuy : bookCopiesToBuy) {
 			isbn = bookCopyToBuy.getISBN();
-			
+
 			validate(bookCopyToBuy);
 
 			book = bookMap.get(isbn);

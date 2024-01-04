@@ -10,14 +10,14 @@ import com.acertainbookstore.interfaces.StockManager;
  * 
  */
 public class WorkloadConfiguration {
-	private int numBooksToBuy = 5;
-	private int numBookCopiesToBuy = 1;
-	private int numEditorPicksToGet = 10;
-	private int numAddCopies = 10;
-	private int numBooksToAdd = 5;
-	private int numBooksWithLeastCopies = 5;
+	private int numBooksToBuy = 5; // sample size from editor picks
+	private int numBookCopiesToBuy = 1; // How many to buy from sampled editor picks
+	private int numEditorPicksToGet = 10; // how many editor picks to get
+	private int numAddCopies = 5; // how many copies of each least copies book to add
+	private int numBooksToAdd = 5; // How many books to generate at random
+	private int numBooksWithLeastCopies = 5; // how many to add to topk fewest copies
 	private int warmUpRuns = 100;
-	private int numActualRuns = 500;
+	private int numActualRuns = 2000;
 	private float percentRareStockManagerInteraction = 10f;
 	private float percentFrequentStockManagerInteraction = 30f;
 	private BookSetGenerator bookSetGenerator = null;
@@ -62,7 +62,7 @@ public class WorkloadConfiguration {
 	public void setNumBooksWithLeastCopies(int numBooksWithLeastCopies) {
 		this.numBooksWithLeastCopies = numBooksWithLeastCopies;
 	}
-	
+
 	public StockManager getStockManager() {
 		return stockManager;
 	}

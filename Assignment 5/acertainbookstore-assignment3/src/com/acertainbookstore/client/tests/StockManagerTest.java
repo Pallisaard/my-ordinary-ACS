@@ -56,7 +56,7 @@ public class StockManagerTest {
 		try {
 			String localTestProperty = System.getProperty(BookStoreConstants.PROPERTY_KEY_LOCAL_TEST);
 			localTest = (localTestProperty != null) ? Boolean.parseBoolean(localTestProperty) : localTest;
-			
+
 			if (localTest) {
 				CertainBookStore store = new CertainBookStore();
 				storeManager = store;
@@ -65,7 +65,7 @@ public class StockManagerTest {
 				storeManager = new StockManagerHTTPProxy("http://localhost:8081/stock");
 				client = new BookStoreHTTPProxy("http://localhost:8081");
 			}
-			
+
 			storeManager.removeAllBooks();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,7 +86,7 @@ public class StockManagerTest {
 	 * Method to add a book, executed before every test case is run.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Before
 	public void initializeBooks() throws BookStoreException {
@@ -100,7 +100,7 @@ public class StockManagerTest {
 	 * Method to clean up the book store, execute after every test case is run.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@After
 	public void cleanupBooks() throws BookStoreException {
@@ -111,7 +111,7 @@ public class StockManagerTest {
 	 * Checks whether the insertion of a books with initialize books worked.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testInitializeBooks() throws BookStoreException {
@@ -128,7 +128,7 @@ public class StockManagerTest {
 	 * Checks whether an insertion of a books with an invalid ISBN is rejected.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testaddBookInvalidISBN() throws BookStoreException {
@@ -163,7 +163,7 @@ public class StockManagerTest {
 	 * is rejected.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testAddBookInvalidCopies() throws BookStoreException {
@@ -193,7 +193,7 @@ public class StockManagerTest {
 	 * Checks whether a book with negative price can be added.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testAddBookInvalidPrice() throws BookStoreException {
@@ -223,7 +223,7 @@ public class StockManagerTest {
 	 * Tests adding copies of a book with correct parameters.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testAddCopiesCorrectBook() throws BookStoreException {
@@ -261,7 +261,7 @@ public class StockManagerTest {
 	 * addCopies (N.B. not addBooks as above) is rejected
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testAddCopiesInvalidNumCopies() throws BookStoreException {
@@ -289,7 +289,7 @@ public class StockManagerTest {
 	 * with addCopies (N.B. not addBooks as above) is rejected
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testAddCopiesInvalidISBN() throws BookStoreException {
@@ -317,7 +317,7 @@ public class StockManagerTest {
 	 * the system (N.B. not addBooks as above) is rejected
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testAddCopiesNonExistingISBN() throws BookStoreException {
@@ -345,11 +345,11 @@ public class StockManagerTest {
 	 * Helper method to make an Editor's pick.
 	 *
 	 * @param isbn
-	 *            the ISBN
+	 *             the ISBN
 	 * @param pick
-	 *            the pick
+	 *             the pick
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	public void addEditorPick(int isbn, boolean pick) throws BookStoreException {
 		Set<BookEditorPick> editorPicksVals = new HashSet<BookEditorPick>();
@@ -362,7 +362,7 @@ public class StockManagerTest {
 	 * Tests the basic editor pick functionality.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testDefaultBookForEditorsPick() throws BookStoreException {
@@ -388,7 +388,7 @@ public class StockManagerTest {
 	 * Checks that a book can be removed.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testRemoveBooks() throws BookStoreException {
@@ -432,7 +432,7 @@ public class StockManagerTest {
 	 * Tests basic getBooksByISBN for the default book.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testGetBooksByISBN() throws BookStoreException {
@@ -455,7 +455,7 @@ public class StockManagerTest {
 	 * Tests basic removeAllBooks functionality.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@Test
 	public void testRemoveAllBooks() throws BookStoreException {
@@ -479,7 +479,7 @@ public class StockManagerTest {
 	 * Tear down after class.
 	 *
 	 * @throws BookStoreException
-	 *             the book store exception
+	 *                            the book store exception
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws BookStoreException {
